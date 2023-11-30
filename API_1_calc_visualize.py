@@ -1,7 +1,7 @@
 # Names: Sami Pratt, Natalie Anderson, Mia Trotter
 # Student IDs: 97430564, 
 # Emails: sppratt@umich.edu, nateand@umich.edu, miatrot@umich.edu
-# List any AI tool (e.g. ChatGPT, GitHub Copilot): ChatGPT
+# List any AI tool (e.g. ChatGPT, GitHub Copilot): 
 
 # Final Project
 
