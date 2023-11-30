@@ -10,13 +10,16 @@
 
 import requests
 
-url = "https://billboard-api2.p.rapidapi.com/artist-100"
+url = "https://us-weather-by-city.p.rapidapi.com/getweather"
 
-querystring = {"date":"2019-05-11","range":"1-10"}
+# for loop 
+# city = ""
+# state = ""
+querystring = {"city":"San Francisco","state":"CA"}
 
 headers = {
 	"X-RapidAPI-Key": "SIGN-UP-FOR-KEY",
-	"X-RapidAPI-Host": "billboard-api2.p.rapidapi.com"
+	"X-RapidAPI-Host": "us-weather-by-city.p.rapidapi.com"
 }
 
 response = requests.get(url, headers=headers, params=querystring)
