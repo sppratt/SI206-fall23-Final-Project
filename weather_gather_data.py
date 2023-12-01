@@ -10,18 +10,24 @@
 
 import requests
 
-url = "https://us-weather-by-city.p.rapidapi.com/getweather"
+def get_data():
 
-# for loop 
-# city = ""
-# state = ""
-querystring = {"city":"San Francisco","state":"CA"}
+	url = "https://weatherapi-com.p.rapidapi.com/current.json"
 
-headers = {
-	"X-RapidAPI-Key": "SIGN-UP-FOR-KEY",
-	"X-RapidAPI-Host": "us-weather-by-city.p.rapidapi.com"
-}
+	# for loop thru latitude and longtidue from population table
+	querystring = {"q":"48.4283,-123.365"}
 
-response = requests.get(url, headers=headers, params=querystring)
+	headers = {
+		"X-RapidAPI-Key": "150d0e020bmshe7e191a3e33bedap11d3d3jsn94fe99a7f050",
+		"X-RapidAPI-Host": "weatherapi-com.p.rapidapi.com"
+	}
 
-print(response.json())
+	response = requests.get(url, headers=headers, params=querystring)
+
+	print(response.json())
+
+def main():
+	get_data()
+
+if __name__ == "__main__":
+    main()
