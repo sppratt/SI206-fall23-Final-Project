@@ -25,12 +25,17 @@ def quality_gather_data(url):
         data_list = []
         # for i in range(100):
         
-        table = soup.find_all('table', class_="stripe row-border order-column compact dataTable no-footer")
-        print(table)
-        body = table.find('tbody')
-        rows = body.find_all('tr')
+        # table = soup.find_all('table', id="t2")
+        table = soup.find('table', {'id': 't2'})
+
+        #print(table)
+        # body = table.find_all('tbody')
+        rows = table.find_all('tr')
         id = 0
-        for row in rows:
+        for row in range(1,len(rows)):
+            row = rows[row]
+            
+            print(row.text)
             cols = row.find_all('td')
             match = re.findall( r"(.*),\s(.*)", cols[1].text)
             city = match[0][0]
@@ -39,10 +44,10 @@ def quality_gather_data(url):
                 match = re.findall("(.*),\s(.*)", city)
                 city = match[0][0]
             
-            quality = int(cols[2].text)
-            safety = int(cols[4].text)
-            cost = int(cols[6].text)
-            traffic = int(cols[8].text)
+            quality = float(cols[2].text)
+            safety = float(cols[4].text)
+            cost = float(cols[6].text)
+            traffic = float(cols[8].text)
             data_list.append([id,city,country,quality,safety,cost,traffic])
             id+=1
             if id == 100:
