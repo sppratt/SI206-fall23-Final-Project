@@ -9,6 +9,7 @@
 # APIs/website (using Beautiful Soup) and store it in a database
 #city_id, city, state, country, quality_of_life_index, safety_index, cost_index, traffic_commute
 import requests
+import json
 from bs4 import BeautifulSoup
 import re
 
@@ -35,7 +36,6 @@ def quality_gather_data(url):
         for row in range(1,len(rows)):
             row = rows[row]
             
-            print(row.text)
             cols = row.find_all('td')
             match = re.findall( r"(.*),\s(.*)", cols[1].text)
             city = match[0][0]
@@ -43,7 +43,9 @@ def quality_gather_data(url):
             if country == "United States":
                 match = re.findall("(.*),\s(.*)", city)
                 city = match[0][0]
-            
+            if '(' in city:
+                match = re.findall(r'^([^(:]+)', city)
+                city = match[0].strip()
             quality = float(cols[2].text)
             safety = float(cols[4].text)
             cost = float(cols[6].text)
@@ -53,8 +55,8 @@ def quality_gather_data(url):
             if id == 100:
                 break
 
-        print(len(data_list))
-        print(data_list)
+        #print(len(data_list))
+        return data_list
         
 
 
@@ -64,4 +66,24 @@ def quality_gather_data(url):
 
 #test run
 url = 'https://www.numbeo.com/quality-of-life/rankings.jsp'
-quality_gather_data(url)
+data_list = quality_gather_data(url)
+
+## POPULATION ADDED
+def population_gather_data(data_list):
+    new_list = []
+    for city in data_list:
+        api_url = 'https://api.api-ninjas.com/v1/city?name={}'.format(city[1])
+        response = requests.get(api_url, headers={'X-Api-Key': 'M5VM2aS8wMwsYdOCutO3dQ==76LK9aFKvZksa0IC'})
+        if response.status_code == requests.codes.ok:
+            inner_list = []
+            data = json.loads(response.text)
+            for val in data[0].values():
+                inner_list.append(val)
+            new_list.append(inner_list)
+
+        else:
+            print("Error:", response.status_code, response.text)
+    return new_list
+        
+pop_list = population_gather_data(data_list)
+print(pop_list)
