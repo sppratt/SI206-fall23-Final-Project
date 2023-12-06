@@ -70,7 +70,6 @@ def quality_gather_data(url):
 #test run
 url = 'https://www.numbeo.com/quality-of-life/rankings.jsp'
 data_list = quality_gather_data(url)
-
 ## POPULATION ADDED
 # def population_gather_data(data_list):
 #     new_list = []
@@ -146,7 +145,7 @@ def create_cities_table(cur, conn):
 
 def add_cities(cur, conn, some_list):
     city_id = 0
-    for city in some_list[:25]:
+    for city in some_list[25:50]:
         city_name = city[0]
         cur.execute("INSERT OR IGNORE INTO cities VALUES (?,?)", (city_name, city_id))
         city_id += 1
@@ -158,7 +157,7 @@ def create_weather_table(cur, conn):
 
 def add_weather_data(cur, conn, some_list):
     city_id = 0
-    for city in some_list[:25]:
+    for city in some_list[25:50]:
         temp_f = city[1]
         feelslike_f = city[2]
         wind_mph = city[3]
@@ -167,19 +166,20 @@ def add_weather_data(cur, conn, some_list):
     conn.commit()
 
 def create_countries_table(cur, conn):
-    cur.execute("CREATE TABLE IF NOT EXISTS countries (country_name TEXT PRIMARY KEY, country_id INTEGER)")
+    cur.execute("CREATE TABLE IF NOT EXISTS countries (country_abbrv TEXT PRIMARY KEY, country_name TEXT, country_id INTEGER)")
     conn.commit()
 
-def add_countries(cur, conn, some_list):
+def add_countries(cur, conn, some_list, quality_list):
     country_id = 0
-    for city in some_list[:25]:
-        country_name = city[3]
+    for i in range(25,50):
+        country_abbrv = some_list[i][3]
+        country_name = quality_list[i][2]
 
         cur.execute("SELECT country_id FROM countries WHERE country_name=?", (country_name,))
         existing_country_id = cur.fetchone()
 
         if existing_country_id is None:
-            cur.execute("INSERT OR IGNORE INTO countries (country_name, country_id) VALUES (?, ?)", (country_name, country_id))
+            cur.execute("INSERT OR IGNORE INTO countries VALUES (?, ?, ?)", (country_abbrv, country_name, country_id))
             country_id += 1
         
     conn.commit()
@@ -190,12 +190,12 @@ def create_population_table(cur, conn):
 
 def add_population_data(cur, conn, some_list):
     city_id = 0
-    for city in some_list[:25]:
+    for city in some_list[25:50]:
         # city_name = city[0]
         latitude = city[1]
         longitude = city[2]
         country = city[3]
-        cur.execute("SELECT country_id FROM countries WHERE country_name=?", (country,))
+        cur.execute("SELECT country_id FROM countries WHERE country_abbrv=?", (country,))
         country_id = cur.fetchone()[0]
         population = city[4]
         is_capital = city[5]
@@ -203,7 +203,23 @@ def add_population_data(cur, conn, some_list):
         city_id +=1
     conn.commit()
 
+def create_quality_table(cur, conn):
+    cur.execute("CREATE TABLE IF NOT EXISTS quality (city_id INTEGER PRIMARY KEY, country_id INTEGER, quality FLOAT, safety FLOAT, cost FLOAT, traffic FLOAT)")
+    conn.commit()
 
+def add_quality_data(cur, conn, some_list):
+    city_id = 0
+    for city in some_list[25:50]:
+        country = city[2]
+        cur.execute("SELECT country_id FROM countries WHERE country_name=?", (country,))
+        country_id = cur.fetchone()[0]
+        quality = city[3]
+        safety = city[4]
+        cost = city[5]
+        traffic = city[6]
+        cur.execute("INSERT OR IGNORE INTO quality VALUES (?,?,?,?,?,?)", (city_id, country_id, quality, safety, cost, traffic))
+        city_id += 1
+    conn.commit()
 
 
 def main():
@@ -215,9 +231,11 @@ def main():
     create_weather_table(cur, conn)
     add_weather_data(cur, conn, weather_list)
     create_countries_table(cur, conn)
-    add_countries(cur, conn, pop_list)
+    add_countries(cur, conn, pop_list, data_list)
     create_population_table(cur, conn)
     add_population_data(cur, conn, pop_list)
+    create_quality_table(cur, conn)
+    add_quality_data(cur, conn, data_list)
 
 	
 
