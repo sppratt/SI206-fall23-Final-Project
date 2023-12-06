@@ -139,38 +139,65 @@ def setUpDatabase(db_name):
     conn = sqlite3.connect(path+'/'+db_name)
     cur = conn.cursor()
     return cur, conn
+
+def create_cities_table(cur, conn):
+    cur.execute("CREATE TABLE IF NOT EXISTS cities (city_name TEXT PRIMARY KEY, city_id INTEGER)")
+    conn.commit()
+
+def add_cities(cur, conn, some_list):
+    city_id = 0
+    for city in some_list[:25]:
+        city_name = city[0]
+        cur.execute("INSERT OR IGNORE INTO cities VALUES (?,?)", (city_name, city_id))
+        city_id += 1
+    conn.commit()
    
 def create_weather_table(cur, conn):
-    
-    cur.execute("CREATE TABLE IF NOT EXISTS weather (city_id INTEGER PRIMARY KEY, city_name TEXT, temp_f FLOAT, feelslike_f FLOAT, wind_mph FLOAT)")
+    cur.execute("CREATE TABLE IF NOT EXISTS weather (city_id INTEGER PRIMARY KEY, temp_f FLOAT, feelslike_f FLOAT, wind_mph FLOAT)")
     conn.commit()
 
 def add_weather_data(cur, conn, some_list):
     city_id = 0
     for city in some_list[:25]:
-        city_name = city[0]
         temp_f = city[1]
         feelslike_f = city[2]
         wind_mph = city[3]
-        cur.execute("INSERT OR IGNORE INTO weather VALUES (?,?,?,?,?)", (city_id, city_name, temp_f, feelslike_f, wind_mph))
+        cur.execute("INSERT OR IGNORE INTO weather VALUES (?,?,?,?)", (city_id, temp_f, feelslike_f, wind_mph))
         city_id +=1
+    conn.commit()
+
+def create_countries_table(cur, conn):
+    cur.execute("CREATE TABLE IF NOT EXISTS countries (country_name TEXT PRIMARY KEY, country_id INTEGER)")
+    conn.commit()
+
+def add_countries(cur, conn, some_list):
+    country_id = 0
+    for city in some_list[:25]:
+        country_name = city[3]
+
+        cur.execute("SELECT country_id FROM countries WHERE country_name=?", (country_name,))
+        existing_country_id = cur.fetchone()
+
+        if existing_country_id is None:
+            cur.execute("INSERT OR IGNORE INTO countries (country_name, country_id) VALUES (?, ?)", (country_name, country_id))
+            country_id += 1
+        
     conn.commit()
     
 def create_population_table(cur, conn):
-
-    cur.execute("CREATE TABLE IF NOT EXISTS population (city_id INTEGER PRIMARY KEY, city_name TEXT, latitude FLOAT, longitude FLOAT, country TEXT, population NUMERIC, is_capital BOOLEAN)")
+    cur.execute("CREATE TABLE IF NOT EXISTS population (city_id INTEGER PRIMARY KEY, latitude FLOAT, longitude FLOAT, country TEXT, population NUMERIC, is_capital BOOLEAN)")
     conn.commit()
 
 def add_population_data(cur, conn, some_list):
     city_id = 0
     for city in some_list[:25]:
-        city_name = city[0]
+        # city_name = city[0]
         latitude = city[1]
         longitude = city[2]
         country = city[3]
         population = city[4]
         is_capital = city[5]
-        cur.execute("INSERT OR IGNORE INTO population VALUES (?,?,?,?,?,?,?)", (city_id, city_name, latitude, longitude, country, population, is_capital))
+        cur.execute("INSERT OR IGNORE INTO population VALUES (?,?,?,?,?,?)", (city_id, latitude, longitude, country, population, is_capital))
         city_id +=1
     conn.commit()
 
@@ -181,8 +208,12 @@ def main():
     # weather_list = get_data(pop_list)
     # sorted_list = sort_data(weather_list)
     cur, conn = setUpDatabase('cities.db')
+    create_cities_table(cur, conn)
+    add_cities(cur, conn, weather_list)
     create_weather_table(cur, conn)
     add_weather_data(cur, conn, weather_list)
+    create_countries_table(cur, conn)
+    add_countries(cur, conn, pop_list)
     create_population_table(cur, conn)
     add_population_data(cur, conn, pop_list)
 
