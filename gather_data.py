@@ -5,9 +5,6 @@
 
 # Final Project
 
-# API #2: write at least one function in this file to gather data from the 
-# APIs/website (using Beautiful Soup) and store it in a database
-#city_id, city, state, country, quality_of_life_index, safety_index, cost_index, traffic_commute
 import requests
 import json
 from bs4 import BeautifulSoup
