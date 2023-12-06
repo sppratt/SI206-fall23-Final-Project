@@ -185,7 +185,7 @@ def add_countries(cur, conn, some_list):
     conn.commit()
     
 def create_population_table(cur, conn):
-    cur.execute("CREATE TABLE IF NOT EXISTS population (city_id INTEGER PRIMARY KEY, latitude FLOAT, longitude FLOAT, country TEXT, population NUMERIC, is_capital BOOLEAN)")
+    cur.execute("CREATE TABLE IF NOT EXISTS population (city_id INTEGER PRIMARY KEY, latitude FLOAT, longitude FLOAT, country_id INTEGER, population NUMERIC, is_capital BOOLEAN)")
     conn.commit()
 
 def add_population_data(cur, conn, some_list):
@@ -195,9 +195,11 @@ def add_population_data(cur, conn, some_list):
         latitude = city[1]
         longitude = city[2]
         country = city[3]
+        cur.execute("SELECT country_id FROM countries WHERE country_name=?", (country,))
+        country_id = cur.fetchone()[0]
         population = city[4]
         is_capital = city[5]
-        cur.execute("INSERT OR IGNORE INTO population VALUES (?,?,?,?,?,?)", (city_id, latitude, longitude, country, population, is_capital))
+        cur.execute("INSERT OR IGNORE INTO population VALUES (?,?,?,?,?,?)", (city_id, latitude, longitude, country_id, population, is_capital))
         city_id +=1
     conn.commit()
 
