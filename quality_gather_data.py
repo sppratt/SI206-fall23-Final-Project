@@ -156,6 +156,25 @@ def add_weather_data(cur, conn, some_list):
         city_id +=1
     conn.commit()
     
+def create_population_table(cur, conn):
+
+    cur.execute("CREATE TABLE IF NOT EXISTS population (city_id INTEGER PRIMARY KEY, city_name TEXT, latitude FLOAT, longitude FLOAT, country TEXT, population NUMERIC, is_capital BOOLEAN)")
+    conn.commit()
+
+def add_population_data(cur, conn, some_list):
+    city_id = 0
+    for city in some_list[:25]:
+        city_name = city[0]
+        latitude = city[1]
+        longitude = city[2]
+        country = city[3]
+        population = city[4]
+        is_capital = city[5]
+        cur.execute("INSERT OR IGNORE INTO population VALUES (?,?,?,?,?,?,?)", (city_id, city_name, latitude, longitude, country, population, is_capital))
+        city_id +=1
+    conn.commit()
+
+
 
 
 def main():
@@ -164,6 +183,9 @@ def main():
     cur, conn = setUpDatabase('cities.db')
     create_weather_table(cur, conn)
     add_weather_data(cur, conn, weather_list)
+    create_population_table(cur, conn)
+    add_population_data(cur, conn, pop_list)
+
 	
 
 if __name__ == "__main__":
