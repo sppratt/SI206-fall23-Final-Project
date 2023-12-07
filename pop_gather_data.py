@@ -13,48 +13,62 @@ def setUpDatabase(db_name):
     return cur, conn
 
 ## POPULATION ADDED
-# def population_gather_data(some_list):
-#     new_list = []
-#     for city in data_list:
-#         api_url = 'https://api.api-ninjas.com/v1/city?name={}'.format(city[1])
-#         response = requests.get(api_url, headers={'X-Api-Key': 'M5VM2aS8wMwsYdOCutO3dQ==76LK9aFKvZksa0IC'})
-#         if response.status_code == requests.codes.ok:
-#             inner_list = []
-#             data = json.loads(response.text)
-#             for val in data[0].values():
-#                 inner_list.append(val)
-#             new_list.append(inner_list)
+# select city_name from cities 
+# data_list = cur.fetchall()
 
-#         else:
-#             print("Error:", response.status_code, response.text)
-    # create_population_table(cur, conn)
-    # add_population_data(cur, conn, pop_list)
-#     return new_list
-        
-# pop_list = population_gather_data(data_list)
-# print(pop_list)
+
+def population_gather_data(cur, conn):
+    cur.execute("SELECT city_name FROM cities")
+    data_list = cur.fetchall()
+    new_list = []
+    for city in data_list:
+        api_url = 'https://api.api-ninjas.com/v1/city?name={}'.format(city[0])
+        response = requests.get(api_url, headers={'X-Api-Key': 'M5VM2aS8wMwsYdOCutO3dQ==76LK9aFKvZksa0IC'})
+        if response.status_code == requests.codes.ok:
+            inner_list = []
+            data = json.loads(response.text)
+            for val in data[0].values():
+                inner_list.append(val)
+            new_list.append(inner_list)
+
+        else:
+            print("Error:", response.status_code, response.text)
+    create_population_table(cur, conn)
+    add_population_data(cur, conn, new_list)
+
 
 def create_population_table(cur, conn):
     cur.execute("CREATE TABLE IF NOT EXISTS population (city_id INTEGER PRIMARY KEY, latitude FLOAT, longitude FLOAT, country_id INTEGER, population NUMERIC, is_capital BOOLEAN)")
     conn.commit()
 
 def add_population_data(cur, conn, some_list):
-    city_id = 0
-    for city in some_list[25:50]:
-        # city_name = city[0]
+    start = get_population_size(cur,conn)
+    for i in range(start, start + 25):
+        city = some_list[i]
+        city_name = city[0]
+        if city_name == "Porto Alegre":
+            city_name = "Porto"
+        print(city_name)
+        cur.execute("SELECT city_id FROM cities WHERE city_name=?", (city_name,))
+        city_id = cur.fetchone()[0]
         latitude = city[1]
         longitude = city[2]
-        country = city[3]
-        cur.execute("SELECT country_id FROM countries WHERE country_abbrv=?", (country,))
+        # country = city[3]
+        cur.execute("SELECT country_id FROM quality WHERE city_id=?", (city_id,))
         country_id = cur.fetchone()[0]
         population = city[4]
         is_capital = city[5]
         cur.execute("INSERT OR IGNORE INTO population VALUES (?,?,?,?,?,?)", (city_id, latitude, longitude, country_id, population, is_capital))
-        city_id +=1
     conn.commit()
+
+def get_population_size(cur, conn):
+    cur.execute("SELECT COUNT(*) FROM population")
+    count = cur.fetchone()[0]
+    return count
 
 def main():
     cur, conn = setUpDatabase('cities.db')
+    population_gather_data(cur, conn)
     
 
     # pop_list = population_gather_data(quality_list)
