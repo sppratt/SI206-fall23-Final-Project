@@ -15,21 +15,40 @@
 # quality of life index per capita by dividing the quality of life by population (join quality and population)
 # can do that with all of the indexes in quality table
 
-def calc1():
-    # do something
-    return
+import requests
+import json
+from bs4 import BeautifulSoup
+import re
+import os
+import matplotlib.pyplot as plt
+import sqlite3
 
-def calc2():
-    # do something
-    return
+def setUpDatabase(db_name):
+    path = os.path.dirname(os.path.abspath(__file__))
+    conn = sqlite3.connect(path+'/'+db_name)
+    cur = conn.cursor()
+    return cur, conn
 
+def calc1(cur, conn):
+
+    cur.execute("SELECT cities.city_name, quality.quality / population.population FROM quality JOIN population ON quality.city_id = population.city_id JOIN cities ON cities.city_id = quality.city_id")
+    results = cur.fetchall()
+    # do something
+    return results
+
+def calc2(cur, conn):
+    cur.execute("SELECT countries.country_name, AVG(weather.temp_f) FROM weather JOIN population ON weather.city_id = population.city_id JOIN countries ON population.country_id = countries.country_id GROUP BY population.country_id")
+    results = cur.fetchall()
+    return results
 
 def calc3():
     # do something
     return
 
 
-def calculations():
+def calculations(cur, conn):
+    calc1(cur, conn)
+    calc2(cur, conn)
 
     # list1 = calc #1
     # list2 = calc #2
@@ -55,6 +74,10 @@ def visualizations():
     pass
 
 def main():
-    calculations()
+    cur, conn = setUpDatabase("cities.db")
+    calculations(cur, conn)
     visualizations()
+
+if __name__ == "__main__":
+    main()
 
