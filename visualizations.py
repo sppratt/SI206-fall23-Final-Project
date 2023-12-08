@@ -22,6 +22,8 @@ import re
 import os
 import matplotlib.pyplot as plt
 import sqlite3
+import pandas as pd
+import plotly.express as px
 
 def setUpDatabase(db_name):
     path = os.path.dirname(os.path.abspath(__file__))
@@ -64,9 +66,22 @@ def calculations(cur, conn):
     # write to text file
     pass
 
-def vis1():
-    # do something
-    pass
+def vis1(cur, conn):
+    cur.execute("SELECT cities.city_name, population.latitude, population.longitude FROM population JOIN cities ON cities.city_id = population.city_id;")
+    results = cur.fetchall()
+
+    df = pd.DataFrame(results, columns=['City', 'Latitude', 'Longitude'])
+
+    fig = px.scatter_geo(df,
+                     lat='Latitude',
+                     lon='Longitude',
+                     text='City',
+                     hover_name='City',
+                     size_max=50) 
+
+    fig.show()
+
+        
 
 def vis2():
     # do something
@@ -77,13 +92,14 @@ def vis3():
     # do something
     pass
 
-def visualizations():
+def visualizations(cur, conn):
+    vis1(cur, conn)
     pass
 
 def main():
     cur, conn = setUpDatabase("cities.db")
     calculations(cur, conn)
-    visualizations()
+    visualizations(cur,conn)
 
 if __name__ == "__main__":
     main()
