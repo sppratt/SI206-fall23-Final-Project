@@ -24,6 +24,8 @@ import matplotlib.pyplot as plt
 import sqlite3
 import pandas as pd
 import plotly.express as px
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
 
 def setUpDatabase(db_name):
     path = os.path.dirname(os.path.abspath(__file__))
@@ -83,9 +85,46 @@ def vis1(cur, conn):
 
         
 
-def vis2():
-    # do something
-    pass
+def vis2(cur, conn):
+    cur.execute("SELECT population.city_id, population.population, quality.quality, quality.safety, quality.traffic, quality.cost FROM population JOIN quality ON quality.city_id = population.city_id")
+    results = cur.fetchall()
+    df = pd.DataFrame(results, columns=['City_id', 'Population', 'Quality of Life', 'Safety', 'Traffic', 'Cost'])
+
+    fig = make_subplots(rows=2, cols=2,
+                    subplot_titles=['Quality of Life', 'Safety', 'Traffic', 'Cost'],
+                    shared_xaxes=True, shared_yaxes=False,
+                    horizontal_spacing=0.1, vertical_spacing=0.2)
+
+    # Add scatter plots with trend lines to subplots
+    fig.add_trace(go.Scatter(x=df['Population'], y=df['Quality of Life'], mode='markers', name='Quality of Life'),
+                row=1, col=1)
+
+    fig.add_trace(go.Scatter(x=df['Population'], y=df['Quality of Life'].rolling(window=5).mean(), mode='lines', name='Trendline'),
+                row=1, col=1)
+
+    fig.add_trace(go.Scatter(x=df['Population'], y=df['Safety'], mode='markers', name='Safety'),
+                row=1, col=2)
+
+    fig.add_trace(go.Scatter(x=df['Population'], y=df['Safety'].rolling(window=5).mean(), mode='lines', name='Trendline'),
+                row=1, col=2)
+
+    fig.add_trace(go.Scatter(x=df['Population'], y=df['Traffic'], mode='markers', name='Traffic'),
+                row=2, col=1)
+
+    fig.add_trace(go.Scatter(x=df['Population'], y=df['Traffic'].rolling(window=5).mean(), mode='lines', name='Trendline'),
+                row=2, col=1)
+
+    fig.add_trace(go.Scatter(x=df['Population'], y=df['Cost'], mode='markers', name='Cost'),
+                row=2, col=2)
+
+    fig.add_trace(go.Scatter(x=df['Population'], y=df['Cost'].rolling(window=5).mean(), mode='lines', name='Trendline'),
+                row=2, col=2)
+
+    # Update layout for better presentation
+    fig.update_layout(title_text='Population vs. Quality of Life Factors')
+
+    # Show the plot
+    fig.show()
 
 
 def vis3():
@@ -94,7 +133,8 @@ def vis3():
 
 def visualizations(cur, conn):
     vis1(cur, conn)
-    pass
+    vis2(cur, conn)
+    
 
 def main():
     cur, conn = setUpDatabase("cities.db")
