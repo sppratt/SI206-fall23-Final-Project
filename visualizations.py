@@ -33,7 +33,6 @@ def calc1(cur, conn):
 
     cur.execute("SELECT cities.city_name, quality.quality / population.population FROM quality JOIN population ON quality.city_id = population.city_id JOIN cities ON cities.city_id = quality.city_id")
     results = cur.fetchall()
-    # do something
     return results
 
 def calc2(cur, conn):
@@ -41,14 +40,22 @@ def calc2(cur, conn):
     results = cur.fetchall()
     return results
 
-def calc3():
-    # do something
-    return
-
+def calc3(cur, conn):
+    cur.execute("SELECT AVG(safety) FROM quality")
+    avg_safety = cur.fetchall()[0][0]
+    cur.execute("SELECT quality.safety FROM quality JOIN population ON quality.city_id = population.city_id ORDER BY population.population DESC LIMIT 10")
+    avg_safety10 = cur.fetchall()
+    total = 0
+    for city in avg_safety10:
+        total += city[0]
+    avg_safety10 = total/10
+    return avg_safety, avg_safety10
+    
 
 def calculations(cur, conn):
     calc1(cur, conn)
     calc2(cur, conn)
+    calc3(cur, conn)
 
     # list1 = calc #1
     # list2 = calc #2
