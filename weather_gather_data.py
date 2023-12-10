@@ -27,7 +27,6 @@ def weather_gather_data(cur, conn):
     start = get_weather_size(cur,conn)
     print(start)
     for i in range(start, start + 25):
-    # for city in data_list:
         city = data_list[i]
         lat = city[0]
         long = city[1]
@@ -56,10 +55,9 @@ def create_weather_table(cur, conn):
     conn.commit()
 
 def add_weather_data(cur, conn, some_list):
-    # start = get_weather_size(cur,conn)
     for i in range(25):
         city = some_list[i]
-        city_id = get_weather_size(cur, conn) - 1
+        city_id = get_weather_size(cur, conn)
         
         temp_f = city[1]
         feelslike_f = city[2]

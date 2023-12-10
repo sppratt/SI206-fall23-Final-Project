@@ -148,9 +148,66 @@ def vis3(cur, conn):
 
     fig.show()
 
+def vis2_0(cur, conn):
+    cur.execute("SELECT population.city_id, population.population, quality.quality, quality.safety, quality.traffic, quality.cost FROM population JOIN quality ON quality.city_id = population.city_id WHERE quality.city_id != 34 AND quality.city_id != 99")
+    results = cur.fetchall()
+    df = pd.DataFrame(results, columns=['City_id', 'Population', 'Quality of Life', 'Safety', 'Traffic Commute Time', 'Cost of Living'])
+
+    fig = make_subplots(rows=2, cols=2,
+                    subplot_titles=['Quality of Life', 'Safety', 'Traffic Commute Time', 'Cost of Living'],
+                    shared_xaxes=False, shared_yaxes=False,
+                    horizontal_spacing=0.1, vertical_spacing=0.2)
+
+    fig.add_trace(go.Scatter(x=df['Population'], y=df['Quality of Life'], mode='markers', name='Quality of Life'),
+                row=1, col=1)
+
+    fig.add_trace(go.Scatter(x=df['Population'], y=np.polyval(np.polyfit(df['Population'], df['Quality of Life'], 1), df['Population']),
+                mode='lines', name='Trendline'),
+                row=1, col=1)
+
+    fig.add_trace(go.Scatter(x=df['Population'], y=df['Safety'], mode='markers', name='Safety'),
+                row=1, col=2)
+
+    fig.add_trace(go.Scatter(x=df['Population'], y=np.polyval(np.polyfit(df['Population'], df['Safety'], 1), df['Population']),
+                mode='lines', name='Trendline'),
+                row=1, col=2)
+
+    fig.add_trace(go.Scatter(x=df['Population'], y=df['Traffic Commute Time'], mode='markers', name='Traffic Commute Time'),
+                row=2, col=1)
+
+    fig.add_trace(go.Scatter(x=df['Population'], y=np.polyval(np.polyfit(df['Population'], df['Traffic Commute Time'], 1), df['Population']),
+                mode='lines', name='Trendline'),
+                row=2, col=1)
+
+    fig.add_trace(go.Scatter(x=df['Population'], y=df['Cost of Living'], mode='markers', name='Cost of Living'),
+                row=2, col=2)
+
+    fig.add_trace(go.Scatter(x=df['Population'], y=np.polyval(np.polyfit(df['Population'], df['Cost of Living'], 1), df['Population']),
+                mode='lines', name='Trendline'),
+                row=2, col=2)
+
+    fig.update_layout(
+        title_text='Population vs. Quality of Life Factors',
+    )
+
+    fig.update_xaxes(title_text='Population', row=1, col=1)
+    fig.update_yaxes(title_text='Quality of Life Index', row=1, col=1)
+
+    fig.update_xaxes(title_text='Population', row=1, col=2)
+    fig.update_yaxes(title_text='Safety Index', row=1, col=2)
+
+    fig.update_xaxes(title_text='Population', row=2, col=1)
+    fig.update_yaxes(title_text='Traffic Commute Time Index', row=2, col=1)
+
+    fig.update_xaxes(title_text='Population', row=2, col=2)
+    fig.update_yaxes(title_text='Cost of Living Index', row=2, col=2)
+
+    fig.show()
+
 def visualizations(cur, conn):
     vis1(cur, conn)
     vis2(cur, conn)
+    vis2_0(cur, conn)
     vis3(cur, conn)
     
 def main():
