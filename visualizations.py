@@ -89,7 +89,7 @@ def vis2(cur, conn):
     cur.execute("SELECT population.city_id, population.population, quality.quality, quality.safety, quality.traffic, quality.cost FROM population JOIN quality ON quality.city_id = population.city_id")
     results = cur.fetchall()
     df = pd.DataFrame(results, columns=['City_id', 'Population', 'Quality of Life', 'Safety', 'Traffic', 'Cost'])
-
+    
     fig = make_subplots(rows=2, cols=2,
                     subplot_titles=['Quality of Life', 'Safety', 'Traffic', 'Cost'],
                     shared_xaxes=True, shared_yaxes=False,
@@ -127,13 +127,21 @@ def vis2(cur, conn):
     fig.show()
 
 
-def vis3():
-    # do something
-    pass
+def vis3(cur, conn):
+    results = calc2(cur, conn) 
+    df = pd.DataFrame(results, columns=['country', 'avg_temp_f'])
+
+    fig = px.bar(df, x='avg_temp_f', y='country', orientation='h',
+             title='Average Temperature (°F) by Country',
+             labels={'avg_temp_f': 'Average Temperature (°F)', 'country': 'Country'},
+             template='plotly_white')
+
+    fig.show()
 
 def visualizations(cur, conn):
     vis1(cur, conn)
     vis2(cur, conn)
+    vis3(cur, conn)
     
 
 def main():
