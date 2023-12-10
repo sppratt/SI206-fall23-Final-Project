@@ -1,19 +1,8 @@
 # Names: Sami Pratt, Natalie Anderson, Mia Trotter
 # Student IDs: 97430564, 14233024, 02196024 
 # Emails: sppratt@umich.edu, nateand@umich.edu, miatrot@umich.edu
-# List any AI tool (e.g. ChatGPT, GitHub Copilot): 
 
 # Final Project
-
-# select data from the database and perform calculations and visualize the results
-
-#plot locations on map (lat vs long)
-#plot temp vs quality of life (cross weather and quality databases)
-#temp vs rank (city id)
-#population vs. quality of life, safety, traffic, cost
-
-# quality of life index per capita by dividing the quality of life by population (join quality and population)
-# can do that with all of the indexes in quality table
 
 import requests
 import json
@@ -55,13 +44,10 @@ def calc3(cur, conn):
         total += city[0]
     avg_safety10 = total/10
     return avg_safety, avg_safety10
-    
 
 def calculations(cur, conn):
     list1 = calc1(cur, conn)
-    # print(list1)
     list2 = calc2(cur, conn)
-    # print(list2)
     avg_safety, avg_safety10 = calc3(cur, conn)
 
     with open('calculation_results.txt', 'w') as f:
@@ -78,10 +64,6 @@ def calculations(cur, conn):
         f.write("\n-----------------------------\n\n")
         f.write("Average Safety Index of All Cities vs. Average Safety Index of Ten Most Populated Cities\n\n")
         f.write(f"All Cities: {avg_safety}\nTen Most Populated: {avg_safety10}")
-
-
-
-
     
 def vis1(cur, conn):
     cur.execute("SELECT cities.city_name, population.latitude, population.longitude FROM population JOIN cities ON cities.city_id = population.city_id;")
@@ -171,7 +153,6 @@ def visualizations(cur, conn):
     vis2(cur, conn)
     vis3(cur, conn)
     
-
 def main():
     cur, conn = setUpDatabase("cities.db")
     calculations(cur, conn)
