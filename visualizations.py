@@ -187,7 +187,7 @@ def vis2_0(cur, conn):
                 row=2, col=2)
 
     fig.update_layout(
-        title_text='Population vs. Quality of Life Factors',
+        title_text='Population vs. Quality of Life Factors (Minus Outliers)',
     )
 
     fig.update_xaxes(title_text='Population', row=1, col=1)
