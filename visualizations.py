@@ -24,7 +24,6 @@ def setUpDatabase(db_name):
     return cur, conn
 
 def calc1(cur, conn):
-
     cur.execute("SELECT cities.city_name, quality.quality / population.population FROM quality JOIN population ON quality.city_id = population.city_id JOIN cities ON cities.city_id = quality.city_id")
     results = cur.fetchall()
     return results
@@ -47,19 +46,39 @@ def calc3(cur, conn):
 
 def calculations(cur, conn):
     list1 = calc1(cur, conn)
+    sorted_list1 = sorted(list1, key=lambda x: x[1], reverse=True)
+    top_list1 = sorted_list1[:5]
+    bottom_list1 = sorted_list1[-5:]
+
     list2 = calc2(cur, conn)
+    sorted_list2 = sorted(list2, key=lambda x: x[1], reverse=True)
+    top_list2 = sorted_list2[:5]
+    bottom_list2 = sorted_list2[-5:]
+
     avg_safety, avg_safety10 = calc3(cur, conn)
 
     with open('calculation_results.txt', 'w') as f:
         f.write('Quality of Life Index per Capita\n\n')
+        f.write("Top Five:\n")
         f.write("City: Quality of Life Index per Capita\n")
-        for line in list1:
+        for line in top_list1:
+            f.write(f"{line[0]}: {line[1]}\n")
+        f.write("\nBottom Five:\n")
+        f.write("City: Quality of Life Index per Capita\n")
+        for line in bottom_list1:
             f.write(f"{line[0]}: {line[1]}\n")
 
         f.write("\n-----------------------------\n\n")
         f.write("Average Temperature per Country\n\n")
+        # for line in list2:
+        #     f.write(f"{line[0]}: {line[1]}\n")
+        f.write("Top Five:\n")
         f.write("Country: Average Temperature ºF\n")
-        for line in list2:
+        for line in top_list2:
+            f.write(f"{line[0]}: {line[1]}\n")
+        f.write("\nBottom Five:\n")
+        f.write("Country: Average Temperature ºF\n")
+        for line in bottom_list2:
             f.write(f"{line[0]}: {line[1]}\n")
         f.write("\n-----------------------------\n\n")
         f.write("Average Safety Index of All Cities vs. Average Safety Index of Ten Most Populated Cities\n\n")
