@@ -23,16 +23,16 @@ Average Temperature per Country
 Top Five:
 Country: Average Temperature ºF
 Singapore: 77.0
-United Arab Emirates: 73.4
 Spain: 72.5
-Portugal: 72.5
-Oman: 71.6
+Portugal: 71.6
+United Arab Emirates: 71.6
+Oman: 69.8
 
 Bottom Five:
 Country: Average Temperature ºF
 Lithuania: 32.0
 Latvia: 32.0
-Sweden: 28.4
+Sweden: 27.5
 Estonia: 26.6
 Finland: 21.2
 

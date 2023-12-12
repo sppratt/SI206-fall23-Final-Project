@@ -16,7 +16,7 @@ def setUpDatabase(db_name):
     cur = conn.cursor()
     return cur, conn
 
-def weather_gather_data(cur, conn):
+def weather_gather_data(cur, conn, key):
     create_weather_table(cur, conn)
      
     cur.execute("SELECT latitude, longitude FROM population ORDER BY city_id")
@@ -30,7 +30,7 @@ def weather_gather_data(cur, conn):
         long = city[1]
         querystring = {"q":f"{lat},{long}"}
         headers = {
-            "X-RapidAPI-Key": "150d0e020bmshe7e191a3e33bedap11d3d3jsn94fe99a7f050",
+            "X-RapidAPI-Key": f"{key}",
 			"X-RapidAPI-Host": "weatherapi-com.p.rapidapi.com"
 		}
         response = requests.get(url, headers=headers, params=querystring)
@@ -68,7 +68,10 @@ def get_weather_size(cur, conn):
 
 def main():
     cur, conn = setUpDatabase('cities.db')
-    weather_gather_data(cur, conn)
+    with open("secret.json", "r") as f:
+        data = json.load(f)
+        key = data["weather-api"]
+    weather_gather_data(cur, conn, key)
 
 if __name__ == "__main__":
     main()

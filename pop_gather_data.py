@@ -16,7 +16,7 @@ def setUpDatabase(db_name):
     cur = conn.cursor()
     return cur, conn
 
-def population_gather_data(cur, conn):
+def population_gather_data(cur, conn, key):
     create_population_table(cur, conn)
     cur.execute("SELECT city_name FROM cities ORDER BY city_id")
     data_list = cur.fetchall()
@@ -25,7 +25,7 @@ def population_gather_data(cur, conn):
     for i in range(start, start + 25):
         name = data_list[i][0]
         api_url = 'https://api.api-ninjas.com/v1/city?name={}'.format(name)
-        response = requests.get(api_url, headers={'X-Api-Key': '33HglWdrhQ8+6vp3ggXWvQ==jLQS9WyZ4Fhyiq3L'})
+        response = requests.get(api_url, headers={'X-Api-Key': f'{key}'})
         if response.status_code == requests.codes.ok:
             inner_list = []
             data = json.loads(response.text)
@@ -65,7 +65,10 @@ def get_population_size(cur, conn):
 
 def main():
     cur, conn = setUpDatabase('cities.db')
-    population_gather_data(cur, conn)
+    with open("secret.json", "r") as f:
+        data = json.load(f)
+        key = data["pop-api"]
+    population_gather_data(cur, conn, key)
 
 if __name__ == "__main__":
     main()
