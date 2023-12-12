@@ -62,14 +62,14 @@ def quality_gather_data(url, cur, conn):
         print(f"Failed to retrieve the webpage. Status code: {response.status_code}")
 
 def create_cities_table(cur, conn):
-    cur.execute("CREATE TABLE IF NOT EXISTS cities (city_name TEXT PRIMARY KEY, city_id INTEGER)")
+    cur.execute("CREATE TABLE IF NOT EXISTS cities (city_id INTEGER PRIMARY KEY, city_name TEXT)")
     conn.commit()
 
 def add_cities(cur, conn, some_list):
     start = get_cities_size(cur,conn)
     for i in range(start, start + 25):
         city_name = some_list[i][1]
-        cur.execute("INSERT OR IGNORE INTO cities VALUES (?,?)", (city_name, i))
+        cur.execute("INSERT OR IGNORE INTO cities VALUES (?,?)", (i, city_name))
     conn.commit()
 
 def get_cities_size(cur, conn):
@@ -78,7 +78,7 @@ def get_cities_size(cur, conn):
     return count
 
 def create_countries_table(cur, conn):
-    cur.execute("CREATE TABLE IF NOT EXISTS countries (country_name TEXT PRIMARY KEY, country_id INTEGER)")
+    cur.execute("CREATE TABLE IF NOT EXISTS countries (country_id INTEGER PRIMARY KEY, country_name TEXT)")
     conn.commit()
 
 def add_countries(cur, conn, quality_list):
@@ -91,7 +91,7 @@ def add_countries(cur, conn, quality_list):
         existing_country_id = cur.fetchone()
 
         if existing_country_id is None:
-            cur.execute("INSERT OR IGNORE INTO countries VALUES (?, ?)", (country_name, country_id))
+            cur.execute("INSERT OR IGNORE INTO countries VALUES (?, ?)", (country_id, country_name))
             country_id += 1
     conn.commit()
 

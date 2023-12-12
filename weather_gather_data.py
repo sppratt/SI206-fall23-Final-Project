@@ -23,9 +23,7 @@ def weather_gather_data(cur, conn):
     data_list = cur.fetchall()
     url = "https://weatherapi-com.p.rapidapi.com/current.json"
     weather_list = []
-    print(data_list)
     start = get_weather_size(cur,conn)
-    print(start)
     for i in range(start, start + 25):
         city = data_list[i]
         lat = city[0]
@@ -47,8 +45,6 @@ def weather_gather_data(cur, conn):
         weather_list.append(inner_list)
 
     add_weather_data(cur, conn, weather_list)
-
-    print(weather_list)
 
 def create_weather_table(cur, conn):
     cur.execute("CREATE TABLE IF NOT EXISTS weather (city_id INTEGER PRIMARY KEY, temp_f FLOAT, feelslike_f FLOAT, wind_mph FLOAT)")
